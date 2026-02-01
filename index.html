@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Bastien ALTMAYER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- VARIABLES CSS --- */
+        :root {
+            --primary-color: #004d91;
+            --primary-hover: #003366;
+            --text-color: #333;
+            --text-muted: #555;
+            --bg-body: transparent;
+            --bg-nav: rgba(255, 255, 255, 0.95);
+            --bg-card: #fff;
+            --bg-section: rgba(255, 255, 255, 0.9);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --date-bg: #eee;
+            
+            /* Variables Intro (Mode Jour) */
+            --intro-bg: #ffffff;
+            --intro-text: #004d91;
+        }
+
+        body.dark-mode {
+            --primary-color: #4dabf7;
+            --primary-hover: #339af0;
+            --text-color: #e9ecef;
+            --text-muted: #adb5bd;
+            --bg-body: #121212;
+            --bg-nav: rgba(30, 30, 30, 0.95);
+            --bg-card: #2c2c2c;
+            --bg-section: rgba(40, 40, 40, 0.9);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --date-bg: #444;
+
+            /* Variables Intro (Mode Nuit) */
+            --intro-bg: #0d1117;
+            --intro-text: #58a6ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-body);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* --- LIENS GENERAUX --- */
+        a { text-decoration: none !important; color: inherit; transition: color 0.3s ease; }
+        a:visited, a:active, a:focus { color: inherit !important; text-decoration: none !important; }
+
+        /* --- BOUTONS (Blanc Forcé) --- */
+        .btn { 
+            display: inline-block; padding: 10px 30px; 
+            background-color: var(--primary-color); 
+            color: #ffffff !important; 
+            border-radius: 5px; transition: 0.3s; margin: 5px; 
+            text-decoration: none !important; font-weight: 500;
+        }
+        .btn:visited, .btn:active, .btn:focus { color: #ffffff !important; }
+        .btn:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-2px); 
+            color: #ffffff !important; 
+        }
+
+        /* --- INTRO "WHOAMI" (Synchronisée) --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--intro-bg); 
+            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--intro-text); 
+            font-family: 'Fira Code', monospace; font-size: 3rem;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+        .cursor {
+            display: inline-block; width: 15px; height: 40px;
+            background-color: var(--intro-text); 
+            margin-left: 5px;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #main-content { opacity: 0; transition: opacity 0.8s ease-in; }
+        #main-content.visible { opacity: 1; }
+
+        /* --- CANVAS --- */
+        #smoke-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: linear-gradient(135deg, var(--bg-section) 0%, rgba(0,0,0,0) 100%);
+            transition: background 0.5s ease;
+        }
+        body.dark-mode #smoke-canvas { background: linear-gradient(135deg, #1a1a2e 0%, #000000 100%); }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 8%; background-color: var(--bg-nav);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky; top: 0; z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        .logo { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); }
+        .nav-right { display: flex; align-items: center; gap: 30px; }
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a { font-weight: 500; position: relative; color: var(--text-color) !important; }
+        .nav-links a::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -5px; left: 0; background-color: var(--primary-color);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a:hover { color: var(--primary-color) !important; }
+
+        #theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-color); padding: 5px; transition: transform 0.3s; }
+        #theme-toggle:hover { transform: rotate(15deg); color: var(--primary-color); }
+
+        /* --- STYLE DU BOUTON LANGUE --- */
+        #lang-toggle {
+            background: none;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding: 2px 8px;
+            margin-left: 15px; 
+            transition: all 0.3s;
+            font-family: 'Fira Code', monospace;
+        }
+
+        #lang-toggle:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* --- HERO --- */
+        .hero { min-height: 90vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; }
+        .profile-pic {
+            width: 180px; height: 180px; border-radius: 50%; object-fit: cover;
+            border: 5px solid var(--bg-card); box-shadow: 0 5px 15px var(--shadow-color); margin-bottom: 25px;
+            transition: transform 0.3s;
+        }
+        .profile-pic:hover { transform: scale(1.05); }
+
+        .hero-content h1 { font-size: 3rem; margin-bottom: 10px; }
+        .hero-content span { color: var(--primary-color); }
+        .hero-content p { font-size: 1.2rem; margin-bottom: 30px; color: var(--text-muted); }
+
+        /* --- SECTIONS --- */
+        section { padding: 80px 10%; scroll-margin-top: 80px; }
+        .content-section {
+            background-color: var(--bg-section); border-radius: 20px;
+            margin: 40px 5%; padding: 40px;
+            box-shadow: 0 10px 30px -10px var(--shadow-color);
+        }
+        h2 { text-align: center; margin-bottom: 40px; font-size: 2rem; color: var(--text-color); position: relative; }
+        h2::after { content: ''; display: block; width: 50px; height: 3px; background: var(--primary-color); margin: 10px auto; }
+
+        /* --- CARDS --- */
+        .timeline-container { display: flex; flex-direction: column; gap: 25px; }
+        .card {
+            background: var(--bg-card); padding: 25px; border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color); border-left: 5px solid var(--primary-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; }
+        .card h3 { font-size: 1.3rem; margin-bottom: 5px; color: var(--text-color); }
+        .card .company { font-weight: 600; color: var(--primary-color); display: block; }
+        .card .date { color: var(--text-muted); font-size: 0.9rem; font-style: italic; background: var(--date-bg); padding: 2px 8px; border-radius: 4px; }
+        .card p, .card ul li { color: var(--text-muted); }
+        .card ul { margin-top: 10px; padding-left: 20px; list-style-type: disc; }
+        .card ul li { margin-bottom: 5px; font-size: 0.95rem; }
+
+        .skills-list { list-style: none !important; padding-left: 0 !important; }
+        .skills-list li { position: relative; padding-left: 20px; margin-bottom: 8px; }
+        .skills-list li::before { content: "•"; position: absolute; left: 0; color: var(--primary-color); font-weight: bold; }
+        .skills-list li strong { color: var(--text-color); }
+
+        /* --- SKILLS --- */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center; }
+        .skill-item { background: var(--bg-card); padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color); transition: transform 0.3s; }
+        .skill-item:hover { transform: translateY(-5px); }
+        .skill-item i { font-size: 2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .skill-item h3 { color: var(--text-color); } .skill-item p { color: var(--text-muted); }
+
+        /* --- CAROUSEL --- */
+        .carousel-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; scrollbar-width: thin; }
+        .carousel-container::-webkit-scrollbar-track { background: transparent; }
+        .carousel-container::-webkit-scrollbar-thumb { background-color: var(--text-muted); border-radius: 4px; }
+        .recommendation-card { background: var(--bg-card); padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); text-align: center; min-width: 300px; flex: 0 0 85%; scroll-snap-align: center; }
+        @media (min-width: 768px) { .recommendation-card { flex: 0 0 45%; } .carousel-container { justify-content: center; } }
+        .quote-icon { font-size: 1.5rem; color: var(--primary-color); opacity: 0.5; margin-bottom: 15px; }
+        .recommendation-text { font-style: italic; font-size: 1rem; color: var(--text-muted); margin-bottom: 20px; }
+        .author-info strong { display: block; color: var(--primary-color); font-size: 1rem; margin-top: 10px; }
+        .author-info span { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+        /* --- CONTACT & FOOTER --- */
+        .contact { text-align: center; background-color: var(--primary-color) !important; color: #fff !important; margin: 40px 5% 0 5%; border-radius: 20px 20px 0 0; padding-bottom: 40px; }
+        .contact h2 { color: #fff; } .contact h2::after { background: #fff; }
+        .contact p { color: rgba(255,255,255,0.8); }
+        .social-links { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+        .social-links a.icon-link { color: #fff !important; font-size: 2rem; transition: transform 0.3s; }
+        .social-links a.icon-link:hover { transform: scale(1.1); opacity: 0.8; }
+        
+        /* STYLE BOUTON CV */
+        .cv-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background-color: #ffffff; color: var(--primary-color) !important;
+            padding: 12px 25px; border-radius: 50px;
+            font-size: 1rem !important; font-weight: 600;
+            text-decoration: none !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .cv-btn:hover { transform: translateY(-3px); background-color: #f0f0f0; }
+
+        footer { text-align: center; padding: 20px; background: #1a1a1a; color: #aaa; font-size: 0.9rem; }
+
+        .fa-school { color: var(--primary-color); font-size: 1.2em; margin-right: 8px; }
+        
+        #back-to-top {
+            position: fixed; bottom: 30px; right: 30px; background-color: var(--primary-color); color: white;
+            width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 1.2rem; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s; z-index: 999;
+        }
+        #back-to-top.visible { opacity: 1; pointer-events: auto; }
+        #back-to-top:hover { transform: translateY(-5px); background-color: var(--primary-hover); }
+
+        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            nav { flex-direction: column; padding: 1rem; gap: 15px; }
+            .nav-right { width: 100%; justify-content: center; }
+            .nav-links { width: 100%; justify-content: center; gap: 15px; flex-wrap: wrap; }
+            section { padding: 40px 5%; }
+            .content-section { margin: 20px 2%; }
+        }
+
+        /* --- STYLES BOUTONS & TABLEAU --- */
+        .bloc-list {
+            list-style: none !important;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .pill-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: var(--primary-color);
+            color: #ffffff !important;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            text-transform: none;
+            width: fit-content;
+            min-width: 320px;
+        }
+
+        .pill-btn:hover {
+            transform: translateY(-3px);
+            background-color: var(--primary-hover);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        }
+
+        .center-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        embed {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div id="intro-overlay"><span id="typing-text"></span><span class="cursor"></span></div>
+    <canvas id="smoke-canvas"></canvas>
+
+    <div id="main-content">
+        <button id="back-to-top" aria-label="Retour en haut"><i class="fas fa-arrow-up"></i></button>
+
+        <header>
+            <nav>
+                <div class="logo">Bastien ALTMAYER</div>
+                <div class="nav-right">
+                    <div class="nav-links">
+                        <a href="#about" data-key="nav_home">Accueil</a>
+                        <a href="#skills" data-key="nav_skills">Compétences</a>
+                        <a href="#experience" data-key="nav_exp">Expérience</a>
+                        <a href="#education" data-key="nav_edu">Formation</a>
+                        <a href="#recommendations" data-key="nav_reco">Recommandations</a>
+                    </div>
+                    <button id="theme-toggle" aria-label="Changer le thème"><i class="fas fa-moon"></i></button>
+                    <button id="lang-toggle" aria-label="Changer la langue">EN</button>
+                </div>
+            </nav>
+        </header>
+
+        <section class="hero animate-on-scroll" id="about">
+            <div class="hero-content">
+                <img src="Moi.jpeg" alt="Bastien ALTMAYER" class="profile-pic">
+                <h1 data-key="hero_title">Bonjour, je suis <span>Bastien ALTMAYER</span></h1>
+                <p data-key="hero_subtitle">BTS SIO à l'EFREI | Pilote Informatique en alternance</p>
+                <div class="cta-buttons">
+                    <a href="#contact" class="btn" data-key="btn_contact">Me contacter</a>
+                    <a href="https://www.linkedin.com/in/bastien-altmayer" target="_blank" class="btn" style="background-color: #0077b5;">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section center-content animate-on-scroll">
+            <h2 data-key="title_tableau">Tableau de synthèse</h2>
+            <embed src="tableau_de_synthese.pdf" width="80%" height="800px" />
+            <a href="tableau_de_synthese.pdf" target="_blank">
+                <button class="pill-btn" data-key="btn_tableau">
+                    <i class="fas fa-file-pdf"></i> Voir le tableau de synthèse
+                </button>
+            </a>
+        </section>
+
+        <section class="content-section animate-on-scroll">
+            <h2 data-key="title_details">Détail des réalisations professionnelles</h2>
+            <ul class="bloc-list">
+                <li><a href="bloc_de_competences/gerer-patrimoine-informatique.html"><button class="pill-btn" data-key="bloc_1"><i class="fas fa-server"></i> Bloc 1 - Gérer le patrimoine informatique</button></a></li>
+                <li><a href="bloc_de_competences/repondre-incidents.html"><button class="pill-btn" data-key="bloc_2"><i class="fas fa-headset"></i> Bloc 2 - Répondre aux incidents et demandes</button></a></li>
+                <li><a href="bloc_de_competences/developper-presence-en-ligne.html"><button class="pill-btn" data-key="bloc_3"><i class="fas fa-globe"></i> Bloc 3 - Développer la présence en ligne</button></a></li>
+                <li><a href="bloc_de_competences/travailler-en-mode-projet.html"><button class="pill-btn" data-key="bloc_4"><i class="fas fa-project-diagram"></i> Bloc 4 - Travailler en mode projet</button></a></li>
+                <li><a href="bloc_de_competences/mettre-a-disposition-service-informatique.html"><button class="pill-btn" data-key="bloc_5"><i class="fas fa-users-cog"></i> Bloc 5 - Mettre à disposition un service IT</button></a></li>
+                <li><a href="bloc_de_competences/organiser-developpement-professionnel.html"><button class="pill-btn" data-key="bloc_6"><i class="fas fa-user-graduate"></i> Bloc 6 - Organiser son développement pro</button></a></li>
+            </ul>
+        </section>
+
+        <section id="skills" class="content-section">
+            <h2 class="animate-on-scroll" data-key="title_skills">Compétences Techniques</h2>
+            <div class="skills-grid">
+                <div class="skill-item animate-on-scroll"><i class="fab fa-microsoft"></i><h3>Microsoft Env.</h3><p data-key="skill_ms_desc">Azure, Intune, AD, PowerShell</p></div>
+                <div class="skill-item animate-on-scroll"><i class="fas fa-network-wired"></i><h3 data-key="skill_net_title">Réseaux</h3><p data-key="skill_net_desc">TCP/IP, Cisco, Fortinet, DHCP/DNS</p></div>
+                <div class="skill-item animate-on-scroll"><i class="fas fa-server"></i><h3 data-key="skill_sys_title">Sys & Virtualisation</h3><p data-key="skill_sys_desc">Linux (Debian), VMware, Proxmox</p></div>
+                <div class="skill-item animate-on-scroll"><i class="fas fa-code"></i><h3 data-key="skill_web_title">Web & BDD</h3><p data-key="skill_web_desc">HTML, CSS, MySQL, JavaScript</p></div>
+            </div>
+        </section>
+
+        <section id="experience" class="content-section">
+            <h2 class="animate-on-scroll" data-key="title_exp">Expérience Professionnelle</h2>
+            <div class="timeline-container">
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3 data-key="exp_lp_title">Pilote Informatique en alternance</h3><span class="company"><i class="fas fa-building"></i> La Poste Groupe</span></div>
+                        <span class="date" data-key="exp_lp_date">En cours</span>
+                    </div>
+                    <ul class="skills-list">
+                        <li data-key="exp_lp_li_1"><strong>Ticketing & Comptes :</strong> Administration des outils (Plume), gestion des arrivées/départs et des accès spécifiques.</li>
+                        <li data-key="exp_lp_li_2"><strong>Gestion des Identités (IAM) :</strong> Création via REFID, gestion des comptes AD (I2A) et des droits (Platon).</li>
+                        <li data-key="exp_lp_li_3"><strong>Administration Infrastructure :</strong> Suivi et maintenance d’un parc de +1 400 VMs sous <strong>vSphere</strong>.</li>
+                        <li data-key="exp_lp_li_4"><strong>Gestion du matériel :</strong> Périphériques et logistique IT.</li>
+                        <li data-key="exp_lp_li_5"><strong>Vie d'équipe :</strong> Participation active (ex: Maison de l’innovation de Nantes).</li>
+                    </ul>
+                </div>
+
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3 data-key="exp_alt_title">Stagiaire Helpdesk N1-N2</h3><span class="company"><i class="fas fa-chart-line"></i> Altares Dun & Bradstreet</span></div>
+                        <span class="date" data-key="exp_alt_date">Nov. 2024 - Déc. 2024</span>
+                    </div>
+                    <p data-key="exp_alt_intro">Stage au sein de l'équipe Modern Workplace IT du service DSO à la Défense.</p>
+                    <ul class="skills-list">
+                        <li data-key="exp_alt_li_1">Packaging et déploiement d'applications via <strong>Microsoft Intune</strong>.</li>
+                        <li data-key="exp_alt_li_2">Gestion des badges, droits d'accès et comptes <strong>PowerShell</strong>.</li>
+                        <li data-key="exp_alt_li_3">Mise en place de politiques de sécurité et règles <strong>Netskope</strong>.</li>
+                        <li data-key="exp_alt_li_4">Gestion des tickets via <strong>Freshservice</strong> et assistance utilisateur.</li>
+                        <li data-key="exp_alt_li_5">Présentation de <strong>Microsoft PIM</strong> (Privileged Identity Management).</li>
+                    </ul>
+                </div>
+
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3 data-key="exp_dgfip2_title">Stagiaire Helpdesk</h3><span class="company"><i class="fas fa-landmark"></i> DGFIP (Finances Publiques)</span></div>
+                        <span class="date" data-key="exp_dgfip2_date">Avr. 2024 - Mai 2024 (2ème période)</span>
+                    </div>
+                    <ul class="skills-list">
+                        <li data-key="exp_dgfip2_li_1">Changement de PC et installation en clientèle.</li>
+                        <li data-key="exp_dgfip2_li_2">Planification de ses activités et de ses interventions.</li>
+                        <li data-key="exp_dgfip2_li_print">Installation de système d’impression :
+                            <ul style="margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;">
+                                <li>Configuration IP</li>
+                                <li>Driver</li>
+                                <li>Test d’impression</li>
+                            </ul>
+                        </li>
+                        <li data-key="exp_dgfip2_li_3">Récupération et inventaire de matériel.</li>
+                        <li data-key="exp_dgfip2_li_4">Inventaire logiciel.</li>
+                        <li data-key="exp_dgfip2_li_5">Reformatage en bas niveau avec schrecOS pour recyclage de PC.</li>
+                        <li data-key="exp_dgfip2_li_6">Masterisation.</li>
+                        <li data-key="exp_dgfip2_li_7">Participation aux réunions hebdomadaires de travail.</li>
+                        <li data-key="exp_dgfip2_li_8">Changement d’écran.</li>
+                        <li data-key="exp_dgfip2_li_9">Initiation à l’étude d’un cœur de réseau.</li>
+                        <li data-key="exp_dgfip2_li_10">Récupération et inventaire de machines.</li>
+                        <li data-key="exp_dgfip2_li_11">Brassage pour mise en place de la TOip.</li>
+                        <li data-key="exp_dgfip2_li_12">Mise à jour de logiciels.</li>
+                        <li data-key="exp_dgfip2_li_13">Recettage de câble RJ45 cuivre avec les Fluke DSX-5000.</li>
+                    </ul>
+                </div>
+
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3 data-key="exp_dgfip2_title">Stagiaire Helpdesk</h3><span class="company"><i class="fas fa-landmark"></i> DGFIP (Finances Publiques)</span></div>
+                        <span class="date" data-key="exp_dgfip1_date">Nov. 2023 - Déc. 2023 (1ère période)</span>
+                    </div>
+                    <p data-key="exp_dgfip1_intro">Première période de stage en équipe informatique :</p>
+                    <ul class="skills-list">
+                        <li data-key="exp_dgfip1_li_1">Changement de PC et installation en clientèle.</li>
+                        <li data-key="exp_dgfip1_li_2">Changement d’écran.</li>
+                        <li data-key="exp_dgfip1_li_3">Planification des activités et des interventions.</li>
+                        <li data-key="exp_dgfip1_li_print">Installation de système d’impression :
+                            <ul style="margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;">
+                                <li>Configuration IP</li>
+                                <li>Installation de driver</li>
+                                <li>Test d’impression</li>
+                            </ul>
+                        </li>
+                        <li data-key="exp_dgfip1_li_4">Récupération et inventaire de matériel.</li>
+                        <li data-key="exp_dgfip1_li_5">Masterisation de PC (déploiement d'image).</li>
+                        <li data-key="exp_dgfip1_li_6">Participation aux réunions hebdomadaires de travail.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="content-section">
+            <h2 class="animate-on-scroll" data-key="title_edu">Formation Académique</h2>
+            <div class="timeline-container">
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3>BTS SIO</h3><span class="company"><i class="fas fa-university"></i> EFREI Paris Panthéon Assas</span></div>
+                        <span class="date" data-key="edu_bts_date">En cours</span>
+                    </div>
+                    <p data-key="edu_bts_desc">Formation technique approfondie.<br><em>Option : Solutions d’Infrastructures, Systèmes et Réseaux (SISR)</em></p>
+                    <ul class="skills-list">
+                        <li data-key="edu_bts_li_1"><strong>Réseaux & Sécurité :</strong> Adressage IP, Cisco Packet Tracer, Windows Server, Azure.</li>
+                        <li data-key="edu_bts_li_2"><strong>Systèmes & Virtualisation :</strong> VMWare, Debian, Linux, Active Directory (AD), GLPI.</li>
+                        <li data-key="edu_bts_li_3"><strong>Support & Gestion :</strong> Agents GLPI, tickets d'assistance, documentation technique.</li>
+                        <li data-key="edu_bts_li_4"><strong>Web & Analyse :</strong> Google Analytics (visibilité), déploiement d'applications Linux.</li>
+                    </ul>
+                </div>
+
+                <div class="card animate-on-scroll">
+                    <div class="card-header">
+                        <div><h3>BAC PRO - Systèmes Numériques</h3><span class="company"><i class="fas fa-school"></i> Lycée Clément Ader</span></div>
+                        <span class="date" data-key="edu_bac_date">Mention Bien</span>
+                    </div>
+                    <p data-key="edu_bac_desc">Option C : Réseaux informatiques et systèmes communicants (RISC)</p>
+                    <ul class="skills-list">
+                        <li data-key="edu_bac_li_1"><strong>Réseaux & Sécurité :</strong> Administration système, DHCP, Adressage IP, Infrastructure réseau, Pare-feux, Fortinet, Produits Cisco Systems.</li>
+                        <li data-key="edu_bac_li_2"><strong>Systèmes & Virtualisation :</strong> Linux (Debian), Active Directory, Proxmox, VMware.</li>
+                        <li data-key="edu_bac_li_3"><strong>Développement & Données :</strong> HTML, CSS, JavaScript, MySQL, Bases de données.</li>
+                        <li data-key="edu_bac_li_4"><strong>Langues :</strong> Anglais technique.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendations" class="content-section">
+            <h2 class="animate-on-scroll" data-key="title_reco">Ils m'ont fait confiance</h2>
+            <div class="carousel-container animate-on-scroll">
+                <div class="recommendation-card">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p class="recommendation-text" data-key="reco_1_text">"Au cours de son stage, Bastien s'est révélé être un membre très impliqué de l'équipe. Ponctuel, volontaire et passionné, il s'est distingué par son savoir-faire et son savoir-être."</p>
+                    <div class="author-info"><strong>Vincent CATÉ</strong><span data-key="reco_1_role">Modern Workplace Manager at Altares D&B</span></div>
+                </div>
+                <div class="recommendation-card">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p class="recommendation-text" data-key="reco_2_text">"Vous avez été un collaborateur précieux. [...] Encore une fois, merci pour le sérieux travail, votre implication sans faille et votre contribution durant votre stage."</p>
+                    <div class="author-info"><strong>Sébastien BOTINELLY</strong><span data-key="reco_2_role">Responsable assistance informatique at DGFIP</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact animate-on-scroll">
+            <h2 data-key="title_contact">Me Contacter</h2>
+            <p data-key="contact_desc">Ouvert aux opportunités et échanges professionnels.</p>
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/bastien-altmayer" target="_blank" class="icon-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:bastien.altmayer@gmail.com" class="icon-link">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="CV_Bastien_ALTMAYER.pdf" class="cv-btn" target="_blank" download data-key="btn_cv">
+                    <i class="fas fa-file-pdf"></i> Mon CV
+                </a>
+            </div>
+        </section>
+
+        <footer><p data-key="footer_text">&copy; 2025 Bastien ALTMAYER. Tous droits réservés.</p></footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* =========================================
+               1. GESTION DE LA TRADUCTION (FR/EN)
+            ========================================= */
+            const translations = {
+                fr: {
+                    nav_home: "Accueil",
+                    nav_exp: "Expérience",
+                    nav_edu: "Formation",
+                    nav_skills: "Compétences",
+                    nav_reco: "Recommandations",
+                    hero_title: "Bonjour, je suis <span>Bastien ALTMAYER</span>",
+                    hero_subtitle: "BTS SIO à l'EFREI | Pilote Informatique en alternance",
+                    btn_contact: "Me contacter",
+                    title_tableau: "Tableau de synthèse",
+                    btn_tableau: '<i class="fas fa-file-pdf"></i> Voir le tableau de synthèse',
+                    title_details: "Détail des réalisations professionnelles",
+                    title_exp: "Expérience Professionnelle",
+                    
+                    // Expériences - La Poste
+                    exp_lp_title: "Pilote Informatique en alternance",
+                    exp_lp_date: "En cours",
+                    exp_lp_li_1: "<strong>Ticketing & Comptes :</strong> Administration des outils (Plume), gestion des arrivées/départs et des accès spécifiques.",
+                    exp_lp_li_2: "<strong>Gestion des Identités (IAM) :</strong> Création via REFID, gestion des comptes AD (I2A) et des droits (Platon).",
+                    exp_lp_li_3: "<strong>Administration Infrastructure :</strong> Suivi et maintenance d’un parc de +1 400 VMs sous <strong>vSphere</strong>.",
+                    exp_lp_li_4: "<strong>Gestion du matériel :</strong> Périphériques et logistique IT.",
+                    exp_lp_li_5: "<strong>Vie d'équipe :</strong> Participation active (ex: Maison de l’innovation de Nantes).",
+                    
+                    // Expériences - Altares
+                    exp_alt_title: "Stagiaire Helpdesk N1-N2",
+                    exp_alt_date: "Nov. 2024 - Déc. 2024",
+                    exp_alt_intro: "Stage au sein de l'équipe Modern Workplace IT du service DSO à la Défense.",
+                    exp_alt_li_1: "Packaging et déploiement d'applications via <strong>Microsoft Intune</strong>.",
+                    exp_alt_li_2: "Gestion des badges, droits d'accès et comptes <strong>PowerShell</strong>.",
+                    exp_alt_li_3: "Mise en place de politiques de sécurité et règles <strong>Netskope</strong>.",
+                    exp_alt_li_4: "Gestion des tickets via <strong>Freshservice</strong> et assistance utilisateur.",
+                    exp_alt_li_5: "Présentation de <strong>Microsoft PIM</strong> (Privileged Identity Management).",
+
+                    // Expériences - DGFIP 2 (Avr-Mai)
+                    exp_dgfip2_title: "Stagiaire Helpdesk",
+                    exp_dgfip2_date: "Avr. 2024 - Mai 2024 (2ème période)",
+                    exp_dgfip2_li_1: "Changement de PC et installation en clientèle.",
+                    exp_dgfip2_li_2: "Planification de ses activités et de ses interventions.",
+                    exp_dgfip2_li_print: "Installation de système d’impression : <ul style='margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;'><li>Configuration IP</li><li>Driver</li><li>Test d’impression</li></ul>",
+                    exp_dgfip2_li_3: "Récupération et inventaire de matériel.",
+                    exp_dgfip2_li_4: "Inventaire logiciel.",
+                    exp_dgfip2_li_5: "Reformatage en bas niveau avec schrecOS pour recyclage de PC.",
+                    exp_dgfip2_li_6: "Masterisation.",
+                    exp_dgfip2_li_7: "Participation aux réunions hebdomadaires de travail.",
+                    exp_dgfip2_li_8: "Changement d’écran.",
+                    exp_dgfip2_li_9: "Initiation à l’étude d’un cœur de réseau.",
+                    exp_dgfip2_li_10: "Récupération et inventaire de machines.",
+                    exp_dgfip2_li_11: "Brassage pour mise en place de la TOip.",
+                    exp_dgfip2_li_12: "Mise à jour de logiciels.",
+                    exp_dgfip2_li_13: "Recettage de câble RJ45 cuivre avec les Fluke DSX-5000.",
+
+                    // Expériences - DGFIP 1 (Nov-Dec)
+                    exp_dgfip1_date: "Nov. 2023 - Déc. 2023 (1ère période)",
+                    exp_dgfip1_intro: "Première période de stage en équipe informatique :",
+                    exp_dgfip1_li_1: "Changement de PC et installation en clientèle.",
+                    exp_dgfip1_li_2: "Changement d’écran.",
+                    exp_dgfip1_li_3: "Planification des activités et des interventions.",
+                    exp_dgfip1_li_print: "Installation de système d’impression : <ul style='margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;'><li>Configuration IP</li><li>Installation de driver</li><li>Test d’impression</li></ul>",
+                    exp_dgfip1_li_4: "Récupération et inventaire de matériel.",
+                    exp_dgfip1_li_5: "Masterisation de PC (déploiement d'image).",
+                    exp_dgfip1_li_6: "Participation aux réunions hebdomadaires de travail.",
+
+                    // Education
+                    title_edu: "Formation Académique",
+                    edu_bts_date: "En cours",
+                    edu_bts_desc: "Formation technique approfondie.<br><em>Option : Solutions d’Infrastructures, Systèmes et Réseaux (SISR)</em>",
+                    edu_bts_li_1: "<strong>Réseaux & Sécurité :</strong> Adressage IP, Cisco Packet Tracer, Windows Server, Azure.",
+                    edu_bts_li_2: "<strong>Systèmes & Virtualisation :</strong> VMWare, Debian, Linux, Active Directory (AD), GLPI.",
+                    edu_bts_li_3: "<strong>Support & Gestion :</strong> Agents GLPI, tickets d'assistance, documentation technique.",
+                    edu_bts_li_4: "<strong>Web & Analyse :</strong> Google Analytics (visibilité), déploiement d'applications Linux.",
+                    
+                    edu_bac_date: "Mention Bien",
+                    edu_bac_desc: "Option C : Réseaux informatiques et systèmes communicants (RISC)",
+                    edu_bac_li_1: "<strong>Réseaux & Sécurité :</strong> Administration système, DHCP, Adressage IP, Infrastructure réseau, Pare-feux, Fortinet, Produits Cisco Systems.",
+                    edu_bac_li_2: "<strong>Systèmes & Virtualisation :</strong> Linux (Debian), Active Directory, Proxmox, VMware.",
+                    edu_bac_li_3: "<strong>Développement & Données :</strong> HTML, CSS, JavaScript, MySQL, Bases de données.",
+                    edu_bac_li_4: "<strong>Langues :</strong> Anglais technique.",
+
+                    // Skills
+                    title_skills: "Compétences Techniques",
+                    skill_ms_desc: "Azure, Intune, AD, PowerShell",
+                    skill_net_title: "Réseaux",
+                    skill_net_desc: "TCP/IP, Cisco, Fortinet, DHCP/DNS",
+                    skill_sys_title: "Sys & Virtualisation",
+                    skill_sys_desc: "Linux (Debian), VMware, Proxmox",
+                    skill_web_title: "Web & BDD",
+                    skill_web_desc: "HTML, CSS, MySQL, JavaScript",
+
+                    // Reco
+                    title_reco: "Ils m'ont fait confiance",
+                    reco_1_text: "\"Au cours de son stage, Bastien s'est révélé être un membre très impliqué de l'équipe. Ponctuel, volontaire et passionné, il s'est distingué par son savoir-faire et son savoir-être.\"",
+                    reco_1_role: "Modern Workplace Manager at Altares D&B",
+                    reco_2_text: "\"Vous avez été un collaborateur précieux. [...] Encore une fois, merci pour le sérieux travail, votre implication sans faille et votre contribution durant votre stage.\"",
+                    reco_2_role: "Responsable assistance informatique at DGFIP",
+
+                    // Contact & Footer
+                    title_contact: "Me Contacter",
+                    contact_desc: "Ouvert aux opportunités et échanges professionnels.",
+                    btn_cv: '<i class="fas fa-file-pdf"></i> Mon CV',
+                    footer_text: "&copy; 2025 Bastien ALTMAYER. Tous droits réservés.",
+                    
+                    // Blocs
+                    bloc_1: '<i class="fas fa-server"></i> Bloc 1 - Gérer le patrimoine informatique',
+                    bloc_2: '<i class="fas fa-headset"></i> Bloc 2 - Répondre aux incidents et demandes',
+                    bloc_3: '<i class="fas fa-globe"></i> Bloc 3 - Développer la présence en ligne',
+                    bloc_4: '<i class="fas fa-project-diagram"></i> Bloc 4 - Travailler en mode projet',
+                    bloc_5: '<i class="fas fa-users-cog"></i> Bloc 5 - Mettre à disposition un service IT',
+                    bloc_6: '<i class="fas fa-user-graduate"></i> Bloc 6 - Organiser son développement pro'
+                },
+                en: {
+                    nav_home: "Home",
+                    nav_exp: "Experience",
+                    nav_edu: "Education",
+                    nav_skills: "Skills",
+                    nav_reco: "Recommendations",
+                    hero_title: "Hello, I am <span>Bastien ALTMAYER</span>",
+                    hero_subtitle: "BTS SIO Student at EFREI | IT Pilot Apprentice",
+                    btn_contact: "Contact Me",
+                    title_tableau: "Summary Table",
+                    btn_tableau: '<i class="fas fa-file-pdf"></i> View Summary Table',
+                    title_details: "Professional Achievements Details",
+                    title_exp: "Professional Experience",
+                    
+                    // Expériences - La Poste
+                    exp_lp_title: "IT Pilot Apprentice",
+                    exp_lp_date: "Ongoing",
+                    exp_lp_li_1: "<strong>Ticketing & Accounts:</strong> Tool administration (Plume), management of arrivals/departures and specific access.",
+                    exp_lp_li_2: "<strong>Identity Management (IAM):</strong> Creation via REFID, AD account management (I2A) and rights (Platon).",
+                    exp_lp_li_3: "<strong>Infrastructure Admin:</strong> Monitoring and maintenance of a fleet of +1,400 VMs under <strong>vSphere</strong>.",
+                    exp_lp_li_4: "<strong>Hardware Management:</strong> Peripherals and IT logistics.",
+                    exp_lp_li_5: "<strong>Team Life:</strong> Active participation (ex: Nantes Innovation House).",
+
+                    // Expériences - Altares
+                    exp_alt_title: "Helpdesk Intern L1-L2",
+                    exp_alt_date: "Nov 2024 - Dec 2024",
+                    exp_alt_intro: "Internship within the Modern Workplace IT team of the DSO department at La Défense.",
+                    exp_alt_li_1: "Application packaging and deployment via <strong>Microsoft Intune</strong>.",
+                    exp_alt_li_2: "Management of badges, access rights, and <strong>PowerShell</strong> accounts.",
+                    exp_alt_li_3: "Implementation of security policies and <strong>Netskope</strong> rules.",
+                    exp_alt_li_4: "Ticket management via <strong>Freshservice</strong> and user support.",
+                    exp_alt_li_5: "Presentation of <strong>Microsoft PIM</strong> (Privileged Identity Management).",
+
+                    // Expériences - DGFIP 2 (Avr-Mai)
+                    exp_dgfip2_title: "Helpdesk Intern",
+                    exp_dgfip2_date: "Apr 2024 - May 2024 (2nd period)",
+                    exp_dgfip2_li_1: "PC replacement and on-site installation.",
+                    exp_dgfip2_li_2: "Planning of activities and interventions.",
+                    exp_dgfip2_li_print: "Installation of printing system: <ul style='margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;'><li>IP Configuration</li><li>Driver</li><li>Print test</li></ul>",
+                    exp_dgfip2_li_3: "Hardware recovery and inventory.",
+                    exp_dgfip2_li_4: "Software inventory.",
+                    exp_dgfip2_li_5: "Low-level reformatting with schrecOS for PC recycling.",
+                    exp_dgfip2_li_6: "Mastering (Imaging).",
+                    exp_dgfip2_li_7: "Participation in weekly work meetings.",
+                    exp_dgfip2_li_8: "Screen replacement.",
+                    exp_dgfip2_li_9: "Introduction to network core study.",
+                    exp_dgfip2_li_10: "Machine recovery and inventory.",
+                    exp_dgfip2_li_11: "Patching for TOip implementation.",
+                    exp_dgfip2_li_12: "Software updates.",
+                    exp_dgfip2_li_13: "RJ45 copper cable certification with Fluke DSX-5000.",
+
+                    // Expériences - DGFIP 1 (Nov-Dec)
+                    exp_dgfip1_date: "Nov 2023 - Dec 2023 (1st period)",
+                    exp_dgfip1_intro: "First internship period in IT team:",
+                    exp_dgfip1_li_1: "PC replacement and on-site installation.",
+                    exp_dgfip1_li_2: "Screen replacement.",
+                    exp_dgfip1_li_3: "Planning of activities and interventions.",
+                    exp_dgfip1_li_print: "Installation of printing system: <ul style='margin-top: 5px; margin-bottom: 5px; list-style-type: none; padding-left: 20px;'><li>IP Configuration</li><li>Driver installation</li><li>Print test</li></ul>",
+                    exp_dgfip1_li_4: "Hardware recovery and inventory.",
+                    exp_dgfip1_li_5: "PC Mastering (image deployment).",
+                    exp_dgfip1_li_6: "Participation in weekly work meetings.",
+
+                    // Education
+                    title_edu: "Academic Background",
+                    edu_bts_date: "Ongoing",
+                    edu_bts_desc: "In-depth technical training.<br><em>Option: Infrastructure, Systems and Networks Solutions (SISR)</em>",
+                    edu_bts_li_1: "<strong>Networks & Security:</strong> IP Addressing, Cisco Packet Tracer, Windows Server, Azure.",
+                    edu_bts_li_2: "<strong>Systems & Virtualization:</strong> VMWare, Debian, Linux, Active Directory (AD), GLPI.",
+                    edu_bts_li_3: "<strong>Support & Management:</strong> GLPI Agents, support tickets, technical documentation.",
+                    edu_bts_li_4: "<strong>Web & Analytics:</strong> Google Analytics (visibility), Linux app deployment.",
+                    
+                    edu_bac_date: "With Honors",
+                    edu_bac_desc: "Option C: Computer networks and communicating systems (RISC)",
+                    edu_bac_li_1: "<strong>Networks & Security:</strong> System admin, DHCP, IP Addressing, Network Infrastructure, Firewalls, Fortinet, Cisco Systems products.",
+                    edu_bac_li_2: "<strong>Systems & Virtualization:</strong> Linux (Debian), Active Directory, Proxmox, VMware.",
+                    edu_bac_li_3: "<strong>Development & Data:</strong> HTML, CSS, JavaScript, MySQL, Databases.",
+                    edu_bac_li_4: "<strong>Languages:</strong> Technical English.",
+
+                    // Skills
+                    title_skills: "Technical Skills",
+                    skill_ms_desc: "Azure, Intune, AD, PowerShell",
+                    skill_net_title: "Networks",
+                    skill_net_desc: "TCP/IP, Cisco, Fortinet, DHCP/DNS",
+                    skill_sys_title: "Sys & Virtualization",
+                    skill_sys_desc: "Linux (Debian), VMware, Proxmox",
+                    skill_web_title: "Web & DB",
+                    skill_web_desc: "HTML, CSS, MySQL, JavaScript",
+
+                    // Reco
+                    title_reco: "They Trusted Me",
+                    reco_1_text: "\"During his internship, Bastien proved to be a very involved member of the team. Punctual, voluntary and passionate, he distinguished himself by his know-how and his interpersonal skills.\"",
+                    reco_1_role: "Modern Workplace Manager at Altares D&B",
+                    reco_2_text: "\"You were a valuable collaborator. [...] Once again, thank you for the serious work, your flawless involvement and your contribution during your internship.\"",
+                    reco_2_role: "IT Support Manager at DGFIP",
+
+                    // Contact & Footer
+                    title_contact: "Contact Me",
+                    contact_desc: "Open to opportunities and professional exchanges.",
+                    btn_cv: '<i class="fas fa-file-pdf"></i> My Resume',
+                    footer_text: "&copy; 2025 Bastien ALTMAYER. All rights reserved.",
+
+                    // Blocs
+                    bloc_1: '<i class="fas fa-server"></i> Block 1 - Manage IT Assets',
+                    bloc_2: '<i class="fas fa-headset"></i> Block 2 - Incident Response',
+                    bloc_3: '<i class="fas fa-globe"></i> Block 3 - Online Presence',
+                    bloc_4: '<i class="fas fa-project-diagram"></i> Block 4 - Project Mode',
+                    bloc_5: '<i class="fas fa-users-cog"></i> Block 5 - IT Service Delivery',
+                    bloc_6: '<i class="fas fa-user-graduate"></i> Block 6 - Professional Dev'
+                }
+            };
+
+            const langToggleBtn = document.getElementById('lang-toggle');
+            let currentLang = localStorage.getItem('lang') || 'fr';
+
+            function updateLanguage(lang) {
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.getAttribute('data-key');
+                    if (translations[lang][key]) {
+                        element.innerHTML = translations[lang][key]; 
+                    }
+                });
+                langToggleBtn.innerText = lang === 'fr' ? 'EN' : 'FR';
+                localStorage.setItem('lang', lang);
+            }
+
+            updateLanguage(currentLang);
+
+            langToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'fr' ? 'en' : 'fr';
+                updateLanguage(currentLang);
+            });
+
+            /* =========================================
+               2. THEME DARK/LIGHT
+            ========================================= */
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = themeToggleBtn.querySelector('i');
+            if (localStorage.getItem('theme') === 'dark') { 
+                document.body.classList.add('dark-mode'); 
+                themeIcon.classList.replace('fa-moon', 'fa-sun'); 
+            }
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                if (isDark) {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+                updateParticleColor();
+            });
+
+            /* =========================================
+               3. INTRO TYPEWRITER
+            ========================================= */
+            const overlay = document.getElementById('intro-overlay');
+            const mainContent = document.getElementById('main-content');
+            const textElement = document.getElementById('typing-text');
+            const textToType = "whoami ?";
+            let charIndex = 0;
+            
+            document.body.style.overflow = 'hidden'; 
+
+            function typeWriter() {
+                if (charIndex < textToType.length) {
+                    textElement.innerHTML += textToType.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 80); 
+                } else { setTimeout(finishIntro, 500); } 
+            }
+            
+            function finishIntro() {
+                overlay.style.opacity = '0'; 
+                overlay.style.visibility = 'hidden';
+                mainContent.classList.add('visible');
+                window.scrollTo(0, 0);
+                setTimeout(() => { 
+                    document.body.style.overflow = 'auto'; 
+                    document.body.style.overflowX = 'hidden'; 
+                    overlay.style.display = 'none'; 
+                }, 500);
+            }
+            setTimeout(typeWriter, 400);
+
+            /* =========================================
+               4. AUTRES FONCTIONNALITÉS
+            ========================================= */
+            
+            // Back to Top
+            const backToTopBtn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', () => { backToTopBtn.classList.toggle('visible', window.scrollY > 300); });
+            backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+            // Scroll Reveal Animation
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+            // Canvas Particles
+            const canvas = document.getElementById('smoke-canvas'); const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 70, particleSizeBase: 100, particleSizeVar: 150, speedBase: 0.4, speedVar: 0.5, colorR: 0, colorG: 85, colorB: 180, opacityBase: 0.08, opacityVar: 0.12 };
+            function updateParticleColor() {
+                if (document.body.classList.contains('dark-mode')) { config.colorR = 60; config.colorG = 140; config.colorB = 240; config.opacityBase = 0.05; }
+                else { config.colorR = 0; config.colorG = 85; config.colorB = 180; config.opacityBase = 0.08; }
+            }
+            updateParticleColor();
+            function resizeCanvas() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+            class Particle {
+                constructor() { this.reset(); this.x = Math.random() * width; this.y = Math.random() * height; this.opacity = Math.random() * (config.opacityBase + config.opacityVar); }
+                reset() { this.x = Math.random() * width; this.y = height + Math.random() * 200; this.radius = config.particleSizeBase + Math.random() * config.particleSizeVar; this.speed = config.speedBase + Math.random() * config.speedVar; this.opacity = 0; this.maxOpacity = config.opacityBase + Math.random() * config.opacityVar; this.opacityGain = 0.003 + Math.random() * 0.005; this.drift = (Math.random() - 0.5) * 0.8; }
+                update() { this.y -= this.speed; this.x += this.drift; if (this.y > height * 0.8 && this.opacity < this.maxOpacity) this.opacity += this.opacityGain; else if (this.y < height * 0.2 && this.opacity > 0) this.opacity -= this.opacityGain * 1.5; if (this.y < -this.radius * 2 || (this.y < height * 0.5 && this.opacity <= 0)) this.reset(); }
+                draw() { if (this.opacity <= 0) return; const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius); const rgb = `${config.colorR}, ${config.colorG}, ${config.colorB}`; gradient.addColorStop(0, `rgba(${rgb}, ${this.opacity})`); gradient.addColorStop(0.5, `rgba(${rgb}, ${this.opacity * 0.5})`); gradient.addColorStop(1, `rgba(${rgb}, 0)`); ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); }
+            }
+            function initCanvas() { resizeCanvas(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            function animate() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            window.addEventListener('resize', resizeCanvas);
+            initCanvas();
+        });
+    </script>
+</body>
+</html>
