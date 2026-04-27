@@ -68,7 +68,53 @@
         }
         #lang-toggle:hover { background-color: var(--primary-color); color: #ffffff; }
 
-        footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
+        /* --- VISIONNEUSE PDF --- */
+        .pdf-viewer-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 20px;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 750px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background: var(--bg-body);
+        }
+        body.dark-mode .pdf-viewer { border-color: rgba(255, 255, 255, 0.1); }
+
+        .pdf-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: 0.3s;
+            border: 2px solid var(--primary-color);
+        }
+        .pdf-btn:hover { background: transparent; color: var(--primary-color) !important; }
+        .pdf-btn.secondary {
+            background: transparent;
+            color: var(--primary-color) !important;
+        }
+        .pdf-btn.secondary:hover { background: var(--primary-color); color: #fff !important; }
+
+        /* Fallback mobile */
+        @media (max-width: 768px) {
+            .pdf-viewer { height: 500px; }
+        }
+
+                footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -108,6 +154,30 @@
                 <span class="project-tag">Hackathon</span>
             </div>
         </div>
+
+        <div class="content-card">
+            <h2 data-key="section_doc"><i class="fas fa-file-pdf"></i> Documentation associée</h2>
+            <p style="color: var(--text-muted); margin-bottom: 10px;" data-key="doc_desc">
+                Documentation sur la planification d'activités en mode projet avec Trello : méthode Kanban, formulation SMART des tâches et gestion collaborative d'un hackathon d'équipe.
+            </p>
+
+            <div class="pdf-viewer-wrapper">
+                <iframe class="pdf-viewer"
+                        src="../docs/C14_-_Planification_Trello.pdf"
+                        title="Planification de projet avec Trello"
+                        loading="lazy">
+                </iframe>
+
+                <div class="pdf-actions">
+                    <a href="../docs/C14_-_Planification_Trello.pdf" target="_blank" rel="noopener" class="pdf-btn" data-key="doc_open">
+                        <i class="fas fa-external-link-alt"></i> Ouvrir dans un nouvel onglet
+                    </a>
+                    <a href="../docs/C14_-_Planification_Trello.pdf" download class="pdf-btn secondary" data-key="doc_download">
+                        <i class="fas fa-download"></i> Télécharger le PDF
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer><span data-key="footer_text">&copy; 2025 Bastien ALTMAYER.</span></footer>
@@ -130,7 +200,11 @@
                     proj_desc: "Participation à un Hackathon (Solo et Groupe). Définition des objectifs, planification rigoureuse des tâches, respect des délais imposés et production de livrables techniques.",
                     tag_pm: "Gestion de projet",
                     tag_plan: "Planification",
-                    footer_text: "&copy; 2025 Bastien ALTMAYER."
+                    section_doc: '<i class="fas fa-file-pdf"></i> Documentation associée',
+                    doc_desc: "Documentation sur la planification d'activités en mode projet avec Trello : méthode Kanban, formulation SMART des tâches et gestion collaborative d'un hackathon d'équipe.",
+                    doc_open: '<i class="fas fa-external-link-alt"></i> Ouvrir dans un nouvel onglet',
+                    doc_download: '<i class="fas fa-download"></i> Télécharger le PDF',
+                                        footer_text: "&copy; 2025 Bastien ALTMAYER."
                 },
                 en: {
                     nav_back: '<i class="fas fa-arrow-left"></i> Back',
@@ -145,7 +219,11 @@
                     proj_desc: "Participation in a Hackathon (Solo and Group). Definition of objectives, rigorous task planning, adherence to imposed deadlines, and production of technical deliverables.",
                     tag_pm: "Project Management",
                     tag_plan: "Planning",
-                    footer_text: "&copy; 2025 Bastien ALTMAYER. All rights reserved."
+                    section_doc: '<i class="fas fa-file-pdf"></i> Related Documentation',
+                    doc_desc: "Documentation on project activity planning with Trello: Kanban method, SMART task formulation and collaborative management of a team hackathon.",
+                    doc_open: '<i class="fas fa-external-link-alt"></i> Open in a new tab',
+                    doc_download: '<i class="fas fa-download"></i> Download PDF',
+                                        footer_text: "&copy; 2025 Bastien ALTMAYER. All rights reserved."
                 }
             };
 
